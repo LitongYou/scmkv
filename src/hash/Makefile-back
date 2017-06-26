@@ -1,0 +1,7 @@
+CC = g++ -std=c++11 -O3 -mavx -maes 
+CC = g++ -std=c++11 -Ofast -mavx -maes 
+
+all: farmhash.o
+
+.cc.o:
+	$(CC) -c $<
