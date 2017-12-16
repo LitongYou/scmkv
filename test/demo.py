@@ -1,8 +1,9 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.4
 import sys
 import numpy as np
 import random
 import subprocess
+import gtts
 
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -88,20 +89,46 @@ class Demo(QWidget):
         bRun.clicked.connect(self.changeWindowTitle)
         bRun.move(600, 20)
 
-        self.img = PlotCanvas(self, 'objects inserted', 'time (s)', 'number (million)')
-        self.img.move(50, 100)
+        self.Ltextbox = QLabel(self)
+        self.Ltextbox.move(50, 80)
+        self.Ltextbox.setText('简介')
+        self.textbox = QTextEdit(self)
+        self.textbox.move(50, 100)
+        self.textbox.resize(800, 80)
 
+        self.img = PlotCanvas(self, 'objects inserted', 'time (s)', 'number (million)')
+        self.img.move(50, 240)
 
         #self.img2 = PlotCanvas(self)
         self.img2 = PlotCanvas(self, 'throughput', 'time (s)', 'Mops')
-        self.img2.move(450, 100)
+        self.img2.move(450, 240)
+
 
         # main window
         self.setWindowTitle(self._title)
         self.setGeometry(300, 300, 900, 700)
         self.show()
+        self.artical = [ '第一行 学而时习之不亦乐乎, ',
+                        '第二行 有朋自远方来不亦乐乎, ',
+                        '第三行 学而时习之不亦乐乎。 ']
+        #self.get_tts()
+
+    def get_tts(self):
+        for i in range(len(self.artical)):
+            fname = "gtts.audio." + str(i) + ".mp3"
+            tts = gtts.tts.gTTS(text=self.artical[i], lang='zh')
+            tts.save(fname)
+
+    def m_tts(self):
+        for i in range(len(self.artical)):
+            fname = "gtts.audio." + str(i) + ".mp3"
+            self.textbox.setText(self.textbox.toPlainText() + self.artical[i])
+            self.repaint()
+            subprocess.call(['mpv', fname, '--no-terminal'], stderr=None, stdout=None)
+
 
     def changeWindowTitle(self, v):
+        self.m_tts()
         self.pbar.setValue(0)
         self.img.reset()
         self.img2.reset()
